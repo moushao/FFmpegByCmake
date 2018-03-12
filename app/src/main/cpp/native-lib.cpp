@@ -2,6 +2,8 @@
 #include <android/log.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+
+
 //
 // Created by JP on 16-3-24.
 //package github.jp1017.hellojni;
@@ -14,6 +16,7 @@ extern "C" {
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
 #include "libx264/x264.h"
+#include "ffmpeg.h"
 };
 #define  LOG_TAG    "videoplayer"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
@@ -24,9 +27,19 @@ extern "C" {
  * obj : 代表调用JNI方法的对象, 即MainActivity对象
  */
 
-/*JNIEXPORT jstring JNICALL Java_github_jp1017_hellojni_MainActivity_staticRegFromJni(JNIEnv *env, jobject obj) {
-    return (*env)->NewStringUTF(env, "静态注册调用成功");
-}*/
+JNIEXPORT jint JNICALL Java_com_pvirtch_ffmpegcmake_FFmpegKit_run(JNIEnv *env, jobject obj,jobjectArray commands) {
+    int argc = env->GetArrayLength(commands);
+    LOGD("命令传进来了吗：%s",argc);
+    char *argv[argc];
+
+    int i;
+    for (i = 0; i < argc; i++) {
+        jstring js = (jstring) env->GetObjectArrayElement(commands, i);
+        argv[i] = (char *) env->GetStringUTFChars(js, 0);
+
+    }
+    return run(argc, argv);
+}
 
 
 
@@ -39,9 +52,10 @@ static jstring nativeStringFromFFmpeg(JNIEnv *env, jobject obj) {
 
 static jint nativeRun(JNIEnv *env,
                       jobject obj,
-                      jobjectArray commands
-) {
+                      jobjectArray commands) {
+    LOGD("进入方法了%s",commands );
     int argc = env->GetArrayLength(commands);
+    LOGD("commands的长度：%s", argc);
     char *argv[argc];
 
     int i;
@@ -50,11 +64,13 @@ static jint nativeRun(JNIEnv *env,
         argv[i] = (char *) env->GetStringUTFChars(js, 0);
 
     }
-    // return run(argc, argv);
-    return 8;
+    return run(argc, argv);
+
 }
 
-static jint nativePlay(JNIEnv *env, jobject obj, jobject surface) {
+static jint nativePlay(JNIEnv *env,
+                       jobject obj,
+                       jobject surface) {
     // sd卡中的视频文件地址,可自行修改或者通过jni传入
     char *file_name = "/storage/emulated/0/DCIM/Camera/123.mp4";
 
