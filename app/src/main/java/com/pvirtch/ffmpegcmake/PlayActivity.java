@@ -40,14 +40,9 @@ public class PlayActivity extends AppCompatActivity {
                 mWaitDialog = new WaitDialog(PlayActivity.this, R.style.waitDialog);
                 mWaitDialog.setWaitText("正在生成视频...请不要退出(大概一分钟左右)");
                 mWaitDialog.show();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        compressVideo(videoAbsolutePath, outputUrl, "10", "32");
-                    }
-                }).start();
+                compressVideo(videoAbsolutePath, outputUrl, "10", "32");
                 // if (TextUtils.isEmpty(textAbsolutePath)) {
-                
+
                 //} else {
                 //    makeVideo();
                 //}
@@ -85,12 +80,12 @@ public class PlayActivity extends AppCompatActivity {
                 }
             }
         };
-        
+
     }
 
     private void compressVideo(final String inDir, final String outDir, final String videoFramerate, final String
             audioFramerate) {
-       
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -98,11 +93,6 @@ public class PlayActivity extends AppCompatActivity {
                 commands[0] = "ffmpeg";
                 commands[1] = "-i";
                 commands[2] = inDir;
-                //                commands[3] = "-vcodec";
-                //                commands[4] = "libx264";
-                //                commands[5] = "-preset";
-                //                commands[6] = "ultrafast";
-
                 commands[3] = "-r";
                 commands[4] = "videoFramerate";
                 commands[5] = "-b:a";
